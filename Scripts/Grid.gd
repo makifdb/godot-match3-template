@@ -19,7 +19,6 @@ onready var possible_dots = [
 	preload("res://Scenes/Dots/pink_dot.tscn"),
 	preload("res://Scenes/Dots/red_dot.tscn"),
 	preload("res://Scenes/Dots/yellow_dot.tscn"),
-	# preload("res://Scenes/Dots/*.tscn")
 ]
 
 var destroy_timer = Timer.new()
