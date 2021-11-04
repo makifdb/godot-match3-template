@@ -45,8 +45,6 @@ func _ready():
 	randomize()
 	all_dots = make_2d_array()
 	spawn_dots()
-	print(x_start)
-	print(y_start)
 	
 func setup_timers():
 	destroy_timer.connect("timeout",self,"destroy_matches")
