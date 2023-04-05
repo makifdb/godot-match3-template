@@ -3,17 +3,17 @@ extends Node2D
 enum {wait, move}
 var state
 
-export (int) var width
-export (int) var height
-export (int) var offset
-export (int) var y_offset
+@export var width: int
+@export var height: int
+@export var offset: int
+@export var y_offset: int
 
-onready var x_start = ((OS.window_size.x / 2.0) - ((width/2.0) * offset ) + (offset / 2))
-onready var y_start = ((OS.window_size.y / 2.0) + ((height/2.0) * offset ) - (offset / 2))
+@onready var x_start = ((get_window().size.x / 2.0) - ((width/2.0) * offset ) + (offset / 2))
+@onready var y_start = ((get_window().size.y / 2.0) + ((height/2.0) * offset ) - (offset / 2))
 
-export (PoolVector2Array) var empty_spaces
+@export var empty_spaces: PackedVector2Array
 
-onready var possible_dots = [
+@onready var possible_dots = [
 	preload("res://Scenes/Dots/blue_dot.tscn"),
 	preload("res://Scenes/Dots/green_dot.tscn"),
 	preload("res://Scenes/Dots/pink_dot.tscn"),
@@ -46,17 +46,17 @@ func _ready():
 	spawn_dots()
 	
 func setup_timers():
-	destroy_timer.connect("timeout",self,"destroy_matches")
+	destroy_timer.connect("timeout", Callable(self, "destroy_matches"))
 	destroy_timer.set_one_shot(true)
 	destroy_timer.set_wait_time(0.2)
 	add_child(destroy_timer)
 	
-	collapse_timer.connect("timeout",self,"collapse_columns")
+	collapse_timer.connect("timeout", Callable(self, "collapse_columns"))
 	collapse_timer.set_one_shot(true)
 	collapse_timer.set_wait_time(0.2)
 	add_child(collapse_timer)
 
-	refill_timer.connect("timeout",self,"refill_columns")
+	refill_timer.connect("timeout", Callable(self, "refill_columns"))
 	refill_timer.set_one_shot(true)
 	refill_timer.set_wait_time(0.2)
 	add_child(refill_timer)
@@ -84,13 +84,13 @@ func spawn_dots():
 	for i in width:
 		for j in height:
 			if !restricted_fill(Vector2(i, j)):
-				var rand = floor(rand_range(0, possible_dots.size()))
-				var dot = possible_dots[rand].instance()
+				var rand = floor(randf_range(0, possible_dots.size()))
+				var dot = possible_dots[rand].instantiate()
 				var loops = 0
 				while (match_at(i, j, dot.color) && loops < 100):
-					rand = floor(rand_range(0,possible_dots.size()))
+					rand = floor(randf_range(0,possible_dots.size()))
 					loops += 1
-					dot = possible_dots[rand].instance()
+					dot = possible_dots[rand].instantiate()
 				add_child(dot)
 				dot.position = grid_to_pixel(i, j)
 				all_dots[i][j] = dot
@@ -115,7 +115,6 @@ func pixel_to_grid(pixel_x,pixel_y):
 	var new_x = round((pixel_x - x_start) / offset)
 	var new_y = round((pixel_y - y_start) / -offset)
 	return Vector2(new_x, new_y)
-	pass
 
 func is_in_grid(grid_position):
 	if grid_position.x >= 0 && grid_position.x < width:
@@ -236,13 +235,13 @@ func refill_columns():
 	for i in width:
 		for j in height:
 			if all_dots[i][j] == null && !restricted_fill(Vector2(i,j)):
-				var rand = floor(rand_range(0, possible_dots.size()))
-				var dot = possible_dots[rand].instance()
+				var rand = floor(randf_range(0, possible_dots.size()))
+				var dot = possible_dots[rand].instantiate()
 				var loops = 0
 				while (match_at(i, j, dot.color) && loops < 100):
-					rand = floor(rand_range(0,possible_dots.size()))
+					rand = floor(randf_range(0,possible_dots.size()))
 					loops += 1
-					dot = possible_dots[rand].instance()
+					dot = possible_dots[rand].instantiate()
 				add_child(dot)
 				dot.position = grid_to_pixel(i, j - y_offset)
 				dot.move(grid_to_pixel(i,j))

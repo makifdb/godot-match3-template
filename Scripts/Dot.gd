@@ -1,18 +1,15 @@
 extends Node2D
 
-export (String) var color
-
-onready var move_tween = $Tween
-onready var sprite = get_node("Sprite")
+@export var color = ""
+@onready var sprite = get_node("Sprite2D")
 var matched = false
 
 func _ready():
 	pass
 	
 func move(target):
-	move_tween.interpolate_property(self, "position", position, target, 0.2, Tween.TRANS_LINEAR, Tween.EASE_OUT)
-	move_tween.start()
-	pass
+	var tween = get_tree().create_tween()
+	tween.tween_property(self, 'position', target, 0.2)
 
 func dim():
 	sprite.modulate = Color(1, 1, 1, 0.5)
