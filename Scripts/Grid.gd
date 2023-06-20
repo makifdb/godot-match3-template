@@ -3,6 +3,9 @@ extends Node2D
 enum {wait, move}
 var state
 
+enum touch_state{swap, chain_bomb}
+var current_touch_state : touch_state = touch_state.swap
+
 @export var width: int
 @export var height: int
 @export var offset: int
@@ -125,8 +128,16 @@ func is_in_grid(grid_position):
 func touch_input():
 	if Input.is_action_just_pressed("ui_touch"):
 		if is_in_grid(pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)):
-			first_touch = pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)
-			controlling = true
+			if current_touch_state == touch_state.swap:
+				first_touch = pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)
+				controlling = true
+			else:
+				state = wait
+				current_touch_state = touch_state.swap
+				print("Use chain bomb at ", pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y))
+				use_chain_bomb(pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y))
+		else:
+			current_touch_state = touch_state.swap
 	if Input.is_action_just_released("ui_touch"):
 		if is_in_grid(pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)) && controlling:
 			controlling = false
@@ -195,7 +206,42 @@ func find_matches():
 							match_and_dim(all_dots[i][j + 1])
 	destroy_timer.start()
 
+var chain_bomb_marked_tiles : Dictionary = {}
+
+func use_chain_bomb(pos : Vector2i):
+	if is_piece_null(pos.x, pos.y):
+		return
+	chain_bomb_marked_tiles.clear()
+	chain_bomb_marked_tiles[pos] = true
+	chain_bomb_second_stage(pos + Vector2i(1,0))
+	chain_bomb_second_stage(pos + Vector2i(-1,0))
+	chain_bomb_second_stage(pos + Vector2i(0,1))
+	chain_bomb_second_stage(pos + Vector2i(0,-1))
+	for posi in chain_bomb_marked_tiles.keys():
+		match_and_dim(all_dots[posi.x][posi.y])
+	destroy_timer.start()
+
+func chain_bomb_second_stage(pos : Vector2i, my_color : String = ""):
+	if pos.x < 0 or pos.y < 0:
+		return
+	if is_piece_null(pos.x, pos.y):
+		return
+	if chain_bomb_marked_tiles.has(pos):
+		return
+	if my_color.is_empty():
+		my_color = all_dots[pos.x][pos.y].color
+	elif all_dots[pos.x][pos.y].color != my_color:
+		return
+	chain_bomb_marked_tiles[pos] = true
+	chain_bomb_second_stage(pos + Vector2i(1,0), my_color)
+	chain_bomb_second_stage(pos + Vector2i(-1,0), my_color)
+	chain_bomb_second_stage(pos + Vector2i(0,1), my_color)
+	chain_bomb_second_stage(pos + Vector2i(0,-1), my_color)
+	
+
 func is_piece_null(column, row):
+	if all_dots.size() <= column or all_dots[column].size() <= row:
+		return true
 	if all_dots[column][row] == null:
 		return true
 	return false
@@ -258,3 +304,7 @@ func after_refill():
 					return
 	state = move
 	move_checked = false
+
+
+func _on_chain_lightning_bomb_pressed():
+	current_touch_state = touch_state.chain_bomb

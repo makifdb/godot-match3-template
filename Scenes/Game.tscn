@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ynpouyser6kn"]
+[gd_scene load_steps=3 format=3 uid="uid://ynpouyser6kn"]
 
 [ext_resource type="Script" path="res://Scripts/Grid.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://juei6mc72cij" path="res://chain lightning bomb.png" id="2_fridh"]
 
 [node name="Game" type="Node"]
 
@@ -17,3 +18,24 @@ height = 7
 offset = 70
 y_offset = -2
 empty_spaces = PackedVector2Array(0, 0, 0, 6, 6, 6, 6, 0, 2, 3, 3, 3, 4, 3)
+
+[node name="inventory" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -730.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="chain lightning bomb" type="TextureButton" parent="inventory"]
+offset_left = 235.0
+offset_top = 65.0
+offset_right = 299.0
+offset_bottom = 129.0
+tooltip_text = "Chain Lightning Bomb"
+texture_normal = ExtResource("2_fridh")
+ignore_texture_size = true
+stretch_mode = 0
+
+[connection signal="pressed" from="inventory/chain lightning bomb" to="Grid" method="_on_chain_lightning_bomb_pressed"]
