@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://ynpouyser6kn"]
+[gd_scene load_steps=3 format=3 uid="uid://bydhmh2nk41ji"]
 
 [ext_resource type="Script" path="res://Scripts/Grid.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://juei6mc72cij" path="res://chain lightning bomb.png" id="2_fridh"]
+[ext_resource type="Texture2D" uid="uid://juei6mc72cij" path="res://Assets/chain lightning bomb/chain lightning bomb.png" id="2_43q3g"]
 
 [node name="Game" type="Node"]
 
@@ -29,12 +29,13 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="chain lightning bomb" type="TextureButton" parent="inventory"]
+layout_mode = 0
 offset_left = 235.0
 offset_top = 65.0
 offset_right = 299.0
 offset_bottom = 129.0
 tooltip_text = "Chain Lightning Bomb"
-texture_normal = ExtResource("2_fridh")
+texture_normal = ExtResource("2_43q3g")
 ignore_texture_size = true
 stretch_mode = 0
 

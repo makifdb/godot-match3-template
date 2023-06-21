@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://juei6mc72cij"
-path="res://.godot/imported/chain lightning bomb.png-c22d36413d04f9a192a1ef2cd70b7c5b.ctex"
+uid="uid://b8vvp60k2anyk"
+path="res://.godot/imported/explosion_12.png-bd01a04150bc0611ee062a95404e1e7a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chain lightning bomb.png"
-dest_files=["res://.godot/imported/chain lightning bomb.png-c22d36413d04f9a192a1ef2cd70b7c5b.ctex"]
+source_file="res://Assets/chain lightning bomb/explosion/explosion_12.png"
+dest_files=["res://.godot/imported/explosion_12.png-bd01a04150bc0611ee062a95404e1e7a.ctex"]
 
 [params]
 
