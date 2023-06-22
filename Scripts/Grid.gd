@@ -4,7 +4,17 @@ enum {wait, move}
 var state
 
 enum touch_state{swap, chain_bomb}
-var current_touch_state : touch_state = touch_state.swap
+var current_touch_state : touch_state = touch_state.swap:
+	set(value):
+		for child in %"item info".get_children():
+			child.visible = false
+		var chain_bomb_particles = $"../inventory/chain lightning bomb/GPUParticles2D"
+		chain_bomb_particles.emitting = false
+		current_touch_state = value
+		match current_touch_state:
+			touch_state.chain_bomb:
+				%"item info/chain lightning bomb".visible = true
+				chain_bomb_particles.emitting = true
 
 @export var width: int
 @export var height: int
