@@ -1,6 +1,33 @@
-[gd_scene load_steps=2 format=3 uid="uid://ynpouyser6kn"]
+[gd_scene load_steps=6 format=3 uid="uid://bydhmh2nk41ji"]
 
 [ext_resource type="Script" path="res://Scripts/Grid.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://juei6mc72cij" path="res://Assets/chain lightning bomb/chain lightning bomb.png" id="2_43q3g"]
+
+[sub_resource type="Gradient" id="Gradient_gen7y"]
+offsets = PackedFloat32Array(0, 0.688889)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_u4nay"]
+gradient = SubResource("Gradient_gen7y")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_w4qv7"]
+emission_shape = 1
+emission_sphere_radius = 4.0
+particle_flag_disable_z = true
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 140.0
+initial_velocity_max = 174.0
+angular_velocity_min = -250.0
+angular_velocity_max = 250.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+damping_min = 100.0
+damping_max = 200.0
+scale_min = 2.0
+scale_max = 7.0
+color = Color(0.698039, 1, 0.921569, 1)
+color_ramp = SubResource("GradientTexture1D_u4nay")
 
 [node name="Game" type="Node"]
 
@@ -17,3 +44,75 @@ height = 7
 offset = 70
 y_offset = -2
 empty_spaces = PackedVector2Array(0, 0, 0, 6, 6, 6, 6, 0, 2, 3, 3, 3, 4, 3)
+
+[node name="item info" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 747.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="chain lightning bomb" type="Control" parent="item info"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="item info/chain lightning bomb"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChainLightningBomb" type="TextureRect" parent="item info/chain lightning bomb/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("2_43q3g")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="item info/chain lightning bomb/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "Chain Lightning Bomb active!
+Click any dot to blow up all connected dots of the same colour!"
+autowrap_mode = 2
+
+[node name="inventory" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -730.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="chain lightning bomb" type="TextureButton" parent="inventory"]
+layout_mode = 0
+offset_left = 235.0
+offset_top = 65.0
+offset_right = 299.0
+offset_bottom = 129.0
+tooltip_text = "Chain Lightning Bomb"
+texture_normal = ExtResource("2_43q3g")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="inventory/chain lightning bomb"]
+show_behind_parent = true
+position = Vector2(33, 31)
+emitting = false
+amount = 64
+process_material = SubResource("ParticleProcessMaterial_w4qv7")
+lifetime = 1.5
+trail_sections = 2
+
+[connection signal="pressed" from="inventory/chain lightning bomb" to="Grid" method="_on_chain_lightning_bomb_pressed"]

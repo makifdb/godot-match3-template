@@ -3,6 +3,19 @@ extends Node2D
 enum {wait, move}
 var state
 
+enum touch_state{swap, chain_bomb}
+var current_touch_state : touch_state = touch_state.swap:
+	set(value):
+		for child in %"item info".get_children():
+			child.visible = false
+		var chain_bomb_particles = $"../inventory/chain lightning bomb/GPUParticles2D"
+		chain_bomb_particles.emitting = false
+		current_touch_state = value
+		match current_touch_state:
+			touch_state.chain_bomb:
+				%"item info/chain lightning bomb".visible = true
+				chain_bomb_particles.emitting = true
+
 @export var width: int
 @export var height: int
 @export var offset: int
@@ -125,8 +138,15 @@ func is_in_grid(grid_position):
 func touch_input():
 	if Input.is_action_just_pressed("ui_touch"):
 		if is_in_grid(pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)):
-			first_touch = pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)
-			controlling = true
+			if current_touch_state == touch_state.swap:
+				first_touch = pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)
+				controlling = true
+			else:
+				current_touch_state = touch_state.swap
+				print("Use chain bomb at ", pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y))
+				use_chain_bomb(pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y))
+		else:
+			current_touch_state = touch_state.swap
 	if Input.is_action_just_released("ui_touch"):
 		if is_in_grid(pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)) && controlling:
 			controlling = false
@@ -195,7 +215,65 @@ func find_matches():
 							match_and_dim(all_dots[i][j + 1])
 	destroy_timer.start()
 
+var chain_bomb_marked_tiles : Dictionary = {}
+var chain_bomb_count : int
+signal chain_bomb_finished
+var explosion_scene := preload("res://Assets/chain lightning bomb/explosion.tscn")
+
+func use_chain_bomb(pos : Vector2i):
+	if is_piece_null(pos.x, pos.y):
+		return
+	state = wait
+	chain_bomb_marked_tiles.clear()
+	chain_bomb_marked_tiles[pos] = true
+	match_and_dim(all_dots[pos.x][pos.y])
+	var new_explosion := explosion_scene.instantiate()
+	add_child(new_explosion)
+	new_explosion.position = grid_to_pixel(pos.x, pos.y)
+	chain_bomb_count = 4
+	chain_bomb_second_stage(pos + Vector2i(1,0))
+	chain_bomb_second_stage(pos + Vector2i(-1,0))
+	chain_bomb_second_stage(pos + Vector2i(0,1))
+	chain_bomb_second_stage(pos + Vector2i(0,-1))
+	await chain_bomb_finished
+	print("Await finished")
+	destroy_timer.start()
+
+func chain_bomb_second_stage(pos : Vector2i, my_color : String = ""):
+	if pos.x < 0 or pos.y < 0:
+		chain_bomb_count -= 1
+		return
+	if is_piece_null(pos.x, pos.y):
+		chain_bomb_count -= 1
+		return
+	if chain_bomb_marked_tiles.has(pos):
+		chain_bomb_count -= 1
+		return
+	if my_color.is_empty():
+		my_color = all_dots[pos.x][pos.y].color
+	elif all_dots[pos.x][pos.y].color != my_color:
+		chain_bomb_count -= 1
+		return
+	var new_explosion := explosion_scene.instantiate()
+	add_child(new_explosion)
+	new_explosion.position = grid_to_pixel(pos.x, pos.y)
+	match_and_dim(all_dots[pos.x][pos.y])
+	await get_tree().create_timer(0.2).timeout
+	chain_bomb_marked_tiles[pos] = true
+	chain_bomb_count += 4
+	chain_bomb_second_stage(pos + Vector2i(1,0), my_color)
+	chain_bomb_second_stage(pos + Vector2i(-1,0), my_color)
+	chain_bomb_second_stage(pos + Vector2i(0,1), my_color)
+	chain_bomb_second_stage(pos + Vector2i(0,-1), my_color)
+	chain_bomb_count -= 1
+	if chain_bomb_count == 0:
+		print("I am the last and only last one")
+		chain_bomb_finished.emit()
+	
+
 func is_piece_null(column, row):
+	if all_dots.size() <= column or all_dots[column].size() <= row:
+		return true
 	if all_dots[column][row] == null:
 		return true
 	return false
@@ -258,3 +336,7 @@ func after_refill():
 					return
 	state = move
 	move_checked = false
+
+
+func _on_chain_lightning_bomb_pressed():
+	current_touch_state = touch_state.chain_bomb
