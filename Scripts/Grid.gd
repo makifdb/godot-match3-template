@@ -142,7 +142,6 @@ func touch_input():
 				first_touch = pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y)
 				controlling = true
 			else:
-				state = wait
 				current_touch_state = touch_state.swap
 				print("Use chain bomb at ", pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y))
 				use_chain_bomb(pixel_to_grid(get_global_mouse_position().x,get_global_mouse_position().y))
@@ -224,6 +223,7 @@ var explosion_scene := preload("res://Assets/chain lightning bomb/explosion.tscn
 func use_chain_bomb(pos : Vector2i):
 	if is_piece_null(pos.x, pos.y):
 		return
+	state = wait
 	chain_bomb_marked_tiles.clear()
 	chain_bomb_marked_tiles[pos] = true
 	match_and_dim(all_dots[pos.x][pos.y])
